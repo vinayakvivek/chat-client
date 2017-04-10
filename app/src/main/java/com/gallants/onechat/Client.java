@@ -1,0 +1,121 @@
+package com.gallants.onechat;
+
+import android.util.Log;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.ConnectException;
+import java.net.InetAddress;
+import java.net.Socket;
+
+/**
+ * Created by vinayakvivek on 4/8/17.
+ */
+
+public class Client {
+	private String serverMessage;
+	public static final String SERVER_IP = "10.0.2.2";
+	public static final int SERVER_PORT = 9009;
+	private OnMessageReceived mMessageListener = null;
+	private boolean mRun = false;
+
+	DataOutputStream out;
+	BufferedReader in;
+
+	/**
+	 * Constructor of the class.
+	 */
+	public Client() {}
+
+	public void setMessageListener(OnMessageReceived listener) {
+		mMessageListener = listener;
+	}
+
+	/**
+	 * Sends the message entered by client to the server
+	 * @param message text entered by client
+	 */
+	public void sendMessage(String message) throws IOException {
+		if (out != null) {
+			out.writeBytes(message);
+			out.flush();
+		} else {
+			Log.i("AppInfo", "writer is null");
+		}
+	}
+
+	public boolean login(String username, String password) throws IOException {
+		String cmd = "\\login";
+
+		sendMessage(cmd);
+		sendMessage(username + "," + password);
+
+		String status = in.readLine();
+		Log.i("AppInfo : status ", status);
+
+		return status.compareTo("1") == 0;
+	}
+
+	public boolean register(String username, String password) throws IOException {
+		String cmd = "\\register";
+
+		sendMessage(cmd);
+		sendMessage(username + "," + password);
+
+		String status = in.readLine();
+		Log.i("AppInfo : status ", status);
+
+		return status.compareTo("1") == 0;
+	}
+
+	public void stopClient() {
+		mRun = false;
+	}
+
+	public void startListening() {
+		mRun = true;
+
+		while (mRun) {
+			try {
+				String message = in.readLine();
+				if (message != null && mMessageListener != null) {
+					mMessageListener.messageReceived(message);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void connect() throws ConnectException {
+		try {
+			InetAddress serverAddr = InetAddress.getByName(SERVER_IP);
+			Log.e("serverAddress", serverAddr.toString());
+			Log.e("TCP Client", "C: Connecting...");
+
+			// create a socket to make the connection with the server
+			Socket clientSocket = new Socket(serverAddr, SERVER_PORT);
+			Log.e("TCP Server IP", SERVER_IP);
+
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			out = new DataOutputStream(clientSocket.getOutputStream());
+
+		} catch (Exception e) {
+			Log.i("AppInfo :", e.toString());
+			throw new ConnectException("Cannot connect to server!");
+		}
+	}
+
+	public String getSERVERIP() {
+		return SERVER_IP;
+	}
+
+	// Declare the interface. The method messageReceived(String message) will
+	// must be implemented in the MyActivity
+	// class at on asynckTask doInBackground
+	public interface OnMessageReceived {
+		public void messageReceived(String message);
+	}
+}
