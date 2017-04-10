@@ -9,17 +9,17 @@ import java.io.InputStreamReader;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by vinayakvivek on 4/8/17.
  */
 
 public class Client {
-	private String serverMessage;
-	public static final String SERVER_IP = "10.0.2.2";
-	public static final int SERVER_PORT = 9009;
+	private static final String SERVER_IP = "10.0.2.2";
+	private static final int SERVER_PORT = 9009;
 	private OnMessageReceived mMessageListener = null;
-	private boolean mRun = false;
+	private static AtomicBoolean mRun = new AtomicBoolean(false);
 
 	DataOutputStream out;
 	BufferedReader in;
@@ -55,6 +55,11 @@ public class Client {
 		String status = in.readLine();
 		Log.i("AppInfo : status ", status);
 
+		sendMessage("1");
+
+		String onlineUsers = in.readLine();
+		Log.i("AppInfo", onlineUsers);
+
 		return status.compareTo("1") == 0;
 	}
 
@@ -67,17 +72,27 @@ public class Client {
 		String status = in.readLine();
 		Log.i("AppInfo : status ", status);
 
+		sendMessage("1");
+
+		String onlineUsers = in.readLine();
+		Log.i("AppInfo", onlineUsers);
+
 		return status.compareTo("1") == 0;
 	}
 
-	public void stopClient() {
-		mRun = false;
+	public void stopListening() {
+		mRun.set(false);
+
+		/*
+		won't work now since in.readLine() is thread blocking.. so startListening() will
+		exit only if a message is received after setting mRun to false
+		 */
 	}
 
 	public void startListening() {
-		mRun = true;
+		mRun.set(true);
 
-		while (mRun) {
+		while (mRun.get()) {
 			try {
 				String message = in.readLine();
 				if (message != null && mMessageListener != null) {

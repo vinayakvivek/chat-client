@@ -5,11 +5,14 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -17,6 +20,10 @@ public class MessageActivity extends AppCompatActivity {
 
 	EditText messageText;
 	Button sendButton;
+
+	ListView messageListView;
+	ArrayList<String> messageList;
+	ArrayAdapter<String> messageAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +43,20 @@ public class MessageActivity extends AppCompatActivity {
 			}
 		});
 
+		messageListView = (ListView) findViewById(R.id.messageListView);
+		messageList = new ArrayList<>();
+		messageAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, messageList);
+
+		messageListView.setAdapter(messageAdapter);
+
 		new ListenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mClient.stopListening();
+		Log.i("AppInfo", "stopping..");
 	}
 
 	public class ListenTask extends AsyncTask<Void, String, Void> {
@@ -59,19 +79,28 @@ public class MessageActivity extends AppCompatActivity {
 
 			if (!values[0].isEmpty()) {
 				Log.i("AppInfo : ", " message : " + values[0]);
-				Toast.makeText(getApplicationContext(), values[0], Toast.LENGTH_SHORT).show();
+//				Toast.makeText(getApplicationContext(), values[0], Toast.LENGTH_SHORT).show();
+				messageAdapter.add(values[0]);
 			}
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			super.onPostExecute(aVoid);
+			Log.i("AppInfo", "stopped listening");
 		}
 	}
 
 	public class SendTask extends AsyncTask<String, Void, Void> {
 
 		boolean status = true;
+		String message = "";
 
 		@Override
 		protected Void doInBackground(String... strings) {
 			try {
 				mClient.sendMessage(strings[0]);
+				message = strings[0];
 			} catch (IOException e) {
 				status = false;
 				e.printStackTrace();
@@ -86,6 +115,7 @@ public class MessageActivity extends AppCompatActivity {
 			String toastText = "";
 			if (status) {
 				toastText = "Message send successfully!";
+				messageAdapter.add("[Me] : " + message);
 			} else {
 				toastText = "Could not send message!";
 			}
