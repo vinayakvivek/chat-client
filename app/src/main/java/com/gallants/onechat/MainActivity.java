@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,6 +22,8 @@ public class MainActivity extends AppCompatActivity {
 	EditText passwordText;
 	Button loginButton;
 	Button registerButton;
+
+	public static ArrayList<String> onlineUsersList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
 				}
 			}
 		});
+
+		onlineUsersList = new ArrayList<>();
 
 		new ConnectTask().execute("");
 	}
@@ -145,4 +150,14 @@ public class MainActivity extends AppCompatActivity {
 		startActivity(intent);
 	}
 
+	/**
+	 * populate onlineUsersList array
+	 * @param users String of the form "['abcd', 'name2', ...]"
+	 */
+	public static void populateOnlineUsers(String users) {
+		String[] parts = users.split("'");
+		for (int i = 1; i < parts.length; i += 2) {
+			onlineUsersList.add(parts[i]);
+		}
+	}
 }

@@ -16,10 +16,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 public class Client {
+
 	private static final String SERVER_IP = "10.0.2.2";
 	private static final int SERVER_PORT = 9009;
 	private OnMessageReceived mMessageListener = null;
 	private static AtomicBoolean mRun = new AtomicBoolean(false);
+	private Socket clientSocket;
 
 	DataOutputStream out;
 	BufferedReader in;
@@ -60,6 +62,8 @@ public class Client {
 		String onlineUsers = in.readLine();
 		Log.i("AppInfo", onlineUsers);
 
+		MainActivity.populateOnlineUsers(onlineUsers);
+
 		return status.compareTo("1") == 0;
 	}
 
@@ -82,6 +86,12 @@ public class Client {
 
 	public void stopListening() {
 		mRun.set(false);
+		try {
+			clientSocket.close();
+			Log.i("AppInfo", "closing socket");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		/*
 		won't work now since in.readLine() is thread blocking.. so startListening() will
@@ -111,7 +121,7 @@ public class Client {
 			Log.e("TCP Client", "C: Connecting...");
 
 			// create a socket to make the connection with the server
-			Socket clientSocket = new Socket(serverAddr, SERVER_PORT);
+			clientSocket = new Socket(serverAddr, SERVER_PORT);
 			Log.e("TCP Server IP", SERVER_IP);
 
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));

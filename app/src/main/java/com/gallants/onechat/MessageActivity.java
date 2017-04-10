@@ -1,9 +1,12 @@
 package com.gallants.onechat;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -48,15 +51,36 @@ public class MessageActivity extends AppCompatActivity {
 		messageAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, messageList);
 
 		messageListView.setAdapter(messageAdapter);
+	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_message, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+			case R.id.action_online_users :
+				startActivity(new Intent(this, OnlineListActivity.class));
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
 		new ListenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mClient.stopListening();
-		Log.i("AppInfo", "stopping..");
+//		mClient.stopListening();
 	}
 
 	public class ListenTask extends AsyncTask<Void, String, Void> {
@@ -79,7 +103,17 @@ public class MessageActivity extends AppCompatActivity {
 
 			if (!values[0].isEmpty()) {
 				Log.i("AppInfo : ", " message : " + values[0]);
-//				Toast.makeText(getApplicationContext(), values[0], Toast.LENGTH_SHORT).show();
+
+				String[] parts = values[0].split("\\s+");
+
+				if (parts.length > 1) {
+					if (parts[0].compareTo("[join]") == 0) {
+						MainActivity.onlineUsersList.add(parts[1]);
+					} else if (parts[0].compareTo("[offline]") == 0) {
+						MainActivity.onlineUsersList.remove(parts[1]);
+					}
+				}
+
 				messageAdapter.add(values[0]);
 			}
 		}
