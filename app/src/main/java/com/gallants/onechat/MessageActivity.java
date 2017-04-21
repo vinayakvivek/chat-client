@@ -1,6 +1,8 @@
 package com.gallants.onechat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,10 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static com.gallants.onechat.MainActivity.KEY_AUTH;
+import static com.gallants.onechat.MainActivity.KEY_NAME;
+import static com.gallants.onechat.MainActivity.PREF_NAME;
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -51,6 +57,8 @@ public class MessageActivity extends AppCompatActivity {
 		messageAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, messageList);
 
 		messageListView.setAdapter(messageAdapter);
+
+		new ListenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
@@ -74,13 +82,24 @@ public class MessageActivity extends AppCompatActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		new ListenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
 //		mClient.stopListening();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		mClient.stopListening();
+
+		SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean(KEY_AUTH, false);
+		editor.putString(KEY_NAME, "");
+		editor.apply();
 	}
 
 	public class ListenTask extends AsyncTask<Void, String, Void> {

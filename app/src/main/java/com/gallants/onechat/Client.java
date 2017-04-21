@@ -102,16 +102,21 @@ public class Client {
 	public void startListening() {
 		mRun.set(true);
 
+		Log.i("AppInfo", "start listening..");
+
 		while (mRun.get()) {
 			try {
 				String message = in.readLine();
 				if (message != null && mMessageListener != null) {
 					mMessageListener.messageReceived(message);
+					Log.i("AppInfo", "[message]" + message);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+
+		Log.i("AppInfo", "stopped listening");
 	}
 
 	public void connect() throws ConnectException {

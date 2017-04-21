@@ -1,6 +1,8 @@
 package com.gallants.onechat;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +18,12 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+	public static final String PREF_NAME = "pref";
+	public static final String KEY_AUTH = "isAuthenticated";
+	public static final String KEY_NAME = "username";
+
 	public static Client mClient;
+	public static String username;
 
 	EditText usernameText;
 	EditText passwordText;
@@ -66,6 +73,13 @@ public class MainActivity extends AppCompatActivity {
 		new ConnectTask().execute("");
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		if (checkIfLoggedIn())
+			goToMessageActivity();
+	}
+
 	public class ConnectTask extends AsyncTask<String, Void, Void> {
 
 		boolean status = true;
@@ -97,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
 		protected Boolean doInBackground(String... params) {
 			Log.i("AppInfo : ", params[0]);
 			Log.i("AppInfo : ", params[1]);
+			username = params[0];
 			boolean status = false;
 			try {
 				status = mClient.login(params[0], params[1]);
@@ -113,11 +128,13 @@ public class MainActivity extends AppCompatActivity {
 			Log.i("AppInfo : ", status.toString());
 
 			if (status) {
-				goToMessageActivity();
+				login();
 			} else {
 				Toast.makeText(getApplicationContext(), "Invalid username/pass", Toast.LENGTH_SHORT).show();
 			}
 		}
+
+
 	}
 
 	public class RegisterTask extends AsyncTask<String, Void, Boolean> {
@@ -159,5 +176,20 @@ public class MainActivity extends AppCompatActivity {
 		for (int i = 1; i < parts.length; i += 2) {
 			onlineUsersList.add(parts[i]);
 		}
+	}
+
+	public boolean checkIfLoggedIn() {
+		SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+		return pref.contains(KEY_AUTH) && pref.getBoolean(KEY_AUTH, false);
+	}
+
+	public void login() {
+		SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean(KEY_AUTH, true);
+		editor.putString(KEY_NAME, username);
+		editor.apply();
+
+		goToMessageActivity();
 	}
 }
