@@ -1,11 +1,16 @@
 package com.gallants.onechat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -24,6 +29,8 @@ public class UsersListActivity extends AppCompatActivity {
 
 	ListView usersListView;
 
+	String currentUser;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -37,21 +44,47 @@ public class UsersListActivity extends AppCompatActivity {
 		usersListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, usersList);
 		usersListView.setAdapter(usersListAdapter);
 
+		usersListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+				currentUser = usersList.get(i);
+				Intent intent = new Intent(getApplicationContext(), PeerMessageActivity.class);
+				intent.putExtra("name", currentUser);
+				startActivity(intent);
+			}
+		});
+
 		new ListenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-
-		mClient.stopListening();
-
-		SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putBoolean(KEY_AUTH, false);
-		editor.putString(KEY_NAME, "");
-		editor.apply();
+		logout();
 	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.menu_message, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+			case R.id.action_online_users :
+				startActivity(new Intent(this, OnlineListActivity.class));
+				return true;
+			case R.id.action_logout :
+				logout();
+				startActivity(new Intent(this, MainActivity.class));
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
 
 	public class ListenTask extends AsyncTask<Void, String, Void> {
 
@@ -89,6 +122,10 @@ public class UsersListActivity extends AppCompatActivity {
 						if (!usersList.contains(username)) {
 							usersListAdapter.add(username);
 						}
+
+						if (username.compareTo(currentUser) == 0) {
+							PeerMessageActivity.updateMessageList(message);
+						}
 					}
 				}
 			}
@@ -99,5 +136,15 @@ public class UsersListActivity extends AppCompatActivity {
 			super.onPostExecute(aVoid);
 			Log.i("AppInfo", "stopped listening");
 		}
+	}
+
+	public void logout() {
+		mClient.stopListening();
+
+		SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean(KEY_AUTH, false);
+		editor.putString(KEY_NAME, "");
+		editor.apply();
 	}
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Client {
 
 //	private static final String SERVER_IP = "localhost";
-	private static final String SERVER_IP = "10.0.2.2";
+	private static final String SERVER_IP = "10.0.1.14";
 	private static final int SERVER_PORT = 9009;
 	private OnMessageReceived mMessageListener = null;
 	private static AtomicBoolean mRun = new AtomicBoolean(false);

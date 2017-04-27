@@ -20,6 +20,8 @@ public class OnlineListActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_online_list);
 
+		setTitle("Online Users");
+
 		onlineUsersListView = (ListView) findViewById(R.id.onlineUsersListView);
 		onlineUserAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, MainActivity.onlineUsersList);
 		onlineUsersListView.setAdapter(onlineUserAdapter);

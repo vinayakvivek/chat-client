@@ -4,4 +4,8 @@
         android:id="@+id/action_online_users"
         android:title="Online users">
     </item>
+    <item
+        android:id="@+id/action_logout"
+        android:title="Log out">
+    </item>
 </menu>
