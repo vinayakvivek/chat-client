@@ -40,7 +40,7 @@ public class UsersListActivity extends AppCompatActivity {
 
 		usersListView = (ListView) findViewById(R.id.usersListView);
 
-		usersList = Utility.getUsers(this);
+		usersList = Utility.getUsers(MainActivity.loggedInUser, this);
 		usersListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, usersList);
 		usersListView.setAdapter(usersListAdapter);
 
@@ -117,7 +117,7 @@ public class UsersListActivity extends AppCompatActivity {
 						String username = parts[1];
 						String message = values[0].substring(7 + username.length() + 2);
 						Log.i("AppInfo", "[message] : " + message);
-						Utility.saveMessage(username, message, getApplicationContext());
+						Utility.saveMessage(username, MainActivity.loggedInUser, message, getApplicationContext());
 
 						if (!usersList.contains(username)) {
 							usersListAdapter.add(username);

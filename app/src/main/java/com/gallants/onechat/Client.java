@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Client {
 
 //	private static final String SERVER_IP = "localhost";
-	private static final String SERVER_IP = "10.0.1.14";
+	private static final String SERVER_IP = "10.0.2.2";
 	private static final int SERVER_PORT = 9009;
 	private OnMessageReceived mMessageListener = null;
 	private static AtomicBoolean mRun = new AtomicBoolean(false);
@@ -62,6 +62,9 @@ public class Client {
 
 		MainActivity.populateOnlineUsers(onlineUsers);
 
+		String pendingMessages = in.readLine();
+		MainActivity.savePendingMessages(pendingMessages);
+
 		return status.compareTo("1") == 0;
 	}
 
@@ -78,6 +81,11 @@ public class Client {
 
 		String onlineUsers = in.readLine();
 		Log.i("AppInfo", onlineUsers);
+
+		MainActivity.populateOnlineUsers(onlineUsers);
+
+		String pendingMessages = in.readLine();
+		MainActivity.savePendingMessages(pendingMessages);
 
 		return status.compareTo("1") == 0;
 	}

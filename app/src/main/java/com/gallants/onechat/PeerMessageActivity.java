@@ -26,7 +26,7 @@ public class PeerMessageActivity extends AppCompatActivity {
 
 	ListView messageListView;
 
-	// username whose messages are open
+	// loggedInUser whose messages are open
 	String name;
 
 	@Override
@@ -51,7 +51,7 @@ public class PeerMessageActivity extends AppCompatActivity {
 		name = bundle.getString("name");
 		setTitle("Messages from " + name);
 
-		messageList = Utility.getMessages(name, getApplicationContext());
+		messageList = Utility.getMessages(name, MainActivity.loggedInUser, getApplicationContext());
 		messageAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, messageList);
 
 		messageListView = (ListView) findViewById(R.id.messageListView);
@@ -87,7 +87,7 @@ public class PeerMessageActivity extends AppCompatActivity {
 			if (status) {
 				toastText = "Message send successfully!";
 				messageAdapter.add("[Me] : " + message);
-				Utility.saveMessage(name, "[Me] : " + message, getApplicationContext());
+				Utility.saveMessage(name, MainActivity.loggedInUser, "[Me] : " + message, getApplicationContext());
 			} else {
 				toastText = "Could not send message!";
 			}

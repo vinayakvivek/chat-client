@@ -12,6 +12,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.net.ConnectException;
 import java.util.ArrayList;
@@ -20,10 +24,10 @@ public class MainActivity extends AppCompatActivity {
 
 	public static final String PREF_NAME = "pref";
 	public static final String KEY_AUTH = "isAuthenticated";
-	public static final String KEY_NAME = "username";
+	public static final String KEY_NAME = "loggedInUser";
 
 	public static Client mClient;
-	public static String username;
+	public static String loggedInUser;
 
 	EditText usernameText;
 	EditText passwordText;
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 		protected Boolean doInBackground(String... params) {
 			Log.i("AppInfo : ", params[0]);
 			Log.i("AppInfo : ", params[1]);
-			username = params[0];
+			loggedInUser = params[0];
 			boolean status = false;
 			try {
 				status = mClient.login(params[0], params[1]);
@@ -130,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 			if (status) {
 				login();
 			} else {
-				Toast.makeText(getApplicationContext(), "Invalid username/pass", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "Invalid loggedInUser/pass", Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -178,6 +182,20 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
+	public static void savePendingMessages(String pendingMessages) {
+		try {
+			JSONObject messages = new JSONObject(pendingMessages);
+			JSONArray msgArray = messages.getJSONArray("messages");
+			for (int i = 0; i < msgArray.length(); ++i) {
+				JSONObject msg = msgArray.getJSONObject(i);
+				JSONArray msgAsArray = msg.getJSONArray("message");
+				Log.i("AppInfo", msgAsArray.toString());
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public boolean checkIfLoggedIn() {
 		SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 		return pref.contains(KEY_AUTH) && pref.getBoolean(KEY_AUTH, false);
@@ -187,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
 		SharedPreferences pref = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = pref.edit();
 		editor.putBoolean(KEY_AUTH, true);
-		editor.putString(KEY_NAME, username);
+		editor.putString(KEY_NAME, loggedInUser);
 		editor.apply();
 
 		goToMessageActivity();

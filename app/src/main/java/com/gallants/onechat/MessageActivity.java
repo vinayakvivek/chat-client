@@ -133,7 +133,7 @@ public class MessageActivity extends AppCompatActivity {
 						String username = parts[1];
 						String message = values[0].substring(7 + username.length() + 2);
 						Log.i("AppInfo", "[message] : " + message);
-						Utility.saveMessage(username, message, getApplicationContext());
+						Utility.saveMessage(username, MainActivity.loggedInUser, message, getApplicationContext());
 					}
 				}
 
