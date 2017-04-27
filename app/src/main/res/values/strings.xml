@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OneChat</string>
+    <string name="content_authority">com.gallants.onechat</string>
 </resources>

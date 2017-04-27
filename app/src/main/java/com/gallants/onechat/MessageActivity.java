@@ -121,7 +121,6 @@ public class MessageActivity extends AppCompatActivity {
 			super.onProgressUpdate(values);
 
 			if (!values[0].isEmpty()) {
-				Log.i("AppInfo : ", " message : " + values[0]);
 
 				String[] parts = values[0].split("\\s+");
 
@@ -130,6 +129,11 @@ public class MessageActivity extends AppCompatActivity {
 						MainActivity.onlineUsersList.add(parts[1]);
 					} else if (parts[0].compareTo("[offline]") == 0) {
 						MainActivity.onlineUsersList.remove(parts[1]);
+					} else if (parts[0].compareTo("message") == 0) {
+						String username = parts[1];
+						String message = values[0].substring(7 + username.length() + 2);
+						Log.i("AppInfo", "[message] : " + message);
+						Utility.saveMessage(username, message, getApplicationContext());
 					}
 				}
 
@@ -172,6 +176,8 @@ public class MessageActivity extends AppCompatActivity {
 			} else {
 				toastText = "Could not send message!";
 			}
+
+			Utility.getMessages(getApplicationContext());
 
 			Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
 		}

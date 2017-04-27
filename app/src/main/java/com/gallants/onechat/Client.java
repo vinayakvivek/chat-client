@@ -107,7 +107,6 @@ public class Client {
 				String message = in.readLine();
 				if (message != null && mMessageListener != null) {
 					mMessageListener.messageReceived(message);
-					Log.i("AppInfo", "[message]" + message);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

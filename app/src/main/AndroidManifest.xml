@@ -24,6 +24,12 @@
         </activity>
         <activity android:name=".PeerMessageActivity">
         </activity>
+
+        <provider
+            android:name=".data.MessageProvider"
+            android:authorities="@string/content_authority"
+            android:exported="false"
+            android:syncable="true"/>
     </application>
 
 </manifest>
