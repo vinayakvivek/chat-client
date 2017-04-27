@@ -30,6 +30,9 @@
             android:authorities="@string/content_authority"
             android:exported="false"
             android:syncable="true"/>
+
+        <activity android:name=".UsersListActivity">
+        </activity>
     </application>
 
 </manifest>

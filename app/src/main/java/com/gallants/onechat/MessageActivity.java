@@ -177,8 +177,6 @@ public class MessageActivity extends AppCompatActivity {
 				toastText = "Could not send message!";
 			}
 
-			Utility.getMessages(getApplicationContext());
-
 			Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_SHORT).show();
 		}
 	}

@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 	}
 
 	public void goToMessageActivity() {
-		Intent intent = new Intent(getApplicationContext(), MessageActivity.class);
+		Intent intent = new Intent(getApplicationContext(), UsersListActivity.class);
 		startActivity(intent);
 	}
 

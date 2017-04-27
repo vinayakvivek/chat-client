@@ -36,12 +36,12 @@ public class Utility {
 		}
 	}
 
-	public static ArrayList<Message> getMessages(Context context) {
-		ArrayList<Message> messageList = new ArrayList<>();
+	public static ArrayList<String> getUsers(Context context) {
+		ArrayList<String> users = new ArrayList<>();
 
 		Cursor messageCursor = context.getContentResolver().query(
 				MessageEntry.CONTENT_URI,
-				new String[]{MessageEntry.COLUMN_SOURCE, MessageEntry.COLUMN_MESSAGE},
+				new String[]{"DISTINCT " + MessageEntry.COLUMN_SOURCE},
 				null,
 				null,
 				null
@@ -49,12 +49,34 @@ public class Utility {
 
 		if (messageCursor != null && messageCursor.moveToFirst()) {
 			while (!messageCursor.isAfterLast()) {
-				String message = messageCursor.getString(messageCursor.getColumnIndex(MessageEntry.COLUMN_MESSAGE));
-				Log.i("AppInfo", "from DB - " + message);
+				String username = messageCursor.getString(messageCursor.getColumnIndex(MessageEntry.COLUMN_SOURCE));
+				users.add(username);
 				messageCursor.moveToNext();
 			}
 		}
 
-		return null;
+		return users;
+	}
+
+	public static ArrayList<String> getMessages(String username, Context context) {
+		ArrayList<String> messageList = new ArrayList<>();
+
+		Cursor messageCursor = context.getContentResolver().query(
+				MessageEntry.CONTENT_URI,
+				new String[]{MessageEntry.COLUMN_MESSAGE},
+				MessageEntry.COLUMN_SOURCE + "= ?",
+				new String[]{username},
+				null
+		);
+
+		if (messageCursor != null && messageCursor.moveToFirst()) {
+			while (!messageCursor.isAfterLast()) {
+				String message = messageCursor.getString(messageCursor.getColumnIndex(MessageEntry.COLUMN_MESSAGE));
+				messageList.add(message);
+				messageCursor.moveToNext();
+			}
+		}
+
+		return messageList;
 	}
 }
