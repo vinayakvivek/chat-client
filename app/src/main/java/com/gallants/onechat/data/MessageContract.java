@@ -30,6 +30,7 @@ public class MessageContract {
 		public static final String TABLE_NAME = "messages";
 
 		public static final String COLUMN_SOURCE = "source";
+		public static final String COLUMN_DEST = "dest";
 		public static final String COLUMN_MESSAGE = "message";
 		public static final String COLUMN_TIME = "time";
 

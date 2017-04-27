@@ -29,7 +29,7 @@ public class UsersListActivity extends AppCompatActivity {
 
 	ListView usersListView;
 
-	String currentUser;
+	String currentUser = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class UsersListActivity extends AppCompatActivity {
 
 		usersListView = (ListView) findViewById(R.id.usersListView);
 
-		usersList = Utility.getUsers(this);
+		usersList = Utility.getUsers(MainActivity.loggedInUser, this);
 		usersListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, usersList);
 		usersListView.setAdapter(usersListAdapter);
 
@@ -61,6 +61,15 @@ public class UsersListActivity extends AppCompatActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		logout();
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Intent startMain = new Intent(Intent.ACTION_MAIN);
+		startMain.addCategory(Intent.CATEGORY_HOME);
+		startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(startMain);
 	}
 
 	@Override
@@ -117,7 +126,7 @@ public class UsersListActivity extends AppCompatActivity {
 						String username = parts[1];
 						String message = values[0].substring(7 + username.length() + 2);
 						Log.i("AppInfo", "[message] : " + message);
-						Utility.saveMessage(username, message, getApplicationContext());
+						Utility.saveMessage(username, MainActivity.loggedInUser, message, getApplicationContext());
 
 						if (!usersList.contains(username)) {
 							usersListAdapter.add(username);

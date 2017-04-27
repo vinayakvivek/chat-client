@@ -13,7 +13,7 @@ import com.gallants.onechat.data.MessageContract.MessageEntry;
 public class MessageDbHelper extends SQLiteOpenHelper {
 
 	// If you change the database schema, you must increment the database version.
-	private static final int DATABASE_VERSION = 5;
+	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "messages.db";
 
 	public MessageDbHelper(Context context) {
@@ -25,7 +25,8 @@ public class MessageDbHelper extends SQLiteOpenHelper {
 		final String SQL_CREATE_MESSAGES_TABLE = "CREATE TABLE " + MessageEntry.TABLE_NAME + " (" +
 				MessageEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 				MessageEntry.COLUMN_SOURCE + " TEXT NOT NULL, " +
-				MessageEntry.COLUMN_MESSAGE + " TEXT NOT NULL, " +
+				MessageEntry.COLUMN_DEST + " TEXT NOT NULL, " +
+				MessageEntry.COLUMN_MESSAGE + " TEXT, " +
 				MessageEntry.COLUMN_TIME + " TIMESTAMP DEFAULT (datetime('now','localtime')) );";
 
 		db.execSQL(SQL_CREATE_MESSAGES_TABLE);

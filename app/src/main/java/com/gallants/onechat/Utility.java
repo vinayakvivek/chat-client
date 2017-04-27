@@ -15,9 +15,10 @@ import java.util.ArrayList;
 
 public class Utility {
 
-	public static boolean saveMessage(String source, String message, Context context) {
+	public static boolean saveMessage(String source, String dest, String message, Context context) {
 		ContentValues values = new ContentValues();
 		values.put(MessageEntry.COLUMN_SOURCE, source);
+		values.put(MessageEntry.COLUMN_DEST, dest);
 		values.put(MessageEntry.COLUMN_MESSAGE, message);
 
 		Log.i("AppInfo", "saving message");
@@ -36,14 +37,14 @@ public class Utility {
 		}
 	}
 
-	public static ArrayList<String> getUsers(Context context) {
+	public static ArrayList<String> getUsers(String loggedInUser, Context context) {
 		ArrayList<String> users = new ArrayList<>();
 
 		Cursor messageCursor = context.getContentResolver().query(
 				MessageEntry.CONTENT_URI,
 				new String[]{"DISTINCT " + MessageEntry.COLUMN_SOURCE},
-				null,
-				null,
+				MessageEntry.COLUMN_DEST + "= ?",
+				new String[]{loggedInUser},
 				null
 		);
 
@@ -58,14 +59,14 @@ public class Utility {
 		return users;
 	}
 
-	public static ArrayList<String> getMessages(String username, Context context) {
+	public static ArrayList<String> getMessages(String username, String loggedInUser, Context context) {
 		ArrayList<String> messageList = new ArrayList<>();
 
 		Cursor messageCursor = context.getContentResolver().query(
 				MessageEntry.CONTENT_URI,
 				new String[]{MessageEntry.COLUMN_MESSAGE},
-				MessageEntry.COLUMN_SOURCE + "= ?",
-				new String[]{username},
+				MessageEntry.COLUMN_DEST + "= ? AND " + MessageEntry.COLUMN_SOURCE + "= ?",
+				new String[]{loggedInUser, username},
 				null
 		);
 
