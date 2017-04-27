@@ -55,17 +55,21 @@ public class Client {
 		String status = in.readLine();
 		Log.i("AppInfo : status ", status);
 
-		sendMessage("1");
+		if (status.compareTo("1") == 0) {
+			sendMessage("1");
 
-		String onlineUsers = in.readLine();
-		Log.i("AppInfo", onlineUsers);
+			String onlineUsers = in.readLine();
+			Log.i("AppInfo", onlineUsers);
 
-		MainActivity.populateOnlineUsers(onlineUsers);
+			MainActivity.populateOnlineUsers(onlineUsers);
 
-		String pendingMessages = in.readLine();
-		MainActivity.savePendingMessages(pendingMessages);
+			String pendingMessages = in.readLine();
+			MainActivity.savePendingMessages(pendingMessages);
 
-		return status.compareTo("1") == 0;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public boolean register(String username, String password) throws IOException {
@@ -77,17 +81,21 @@ public class Client {
 		String status = in.readLine();
 		Log.i("AppInfo : status ", status);
 
-		sendMessage("1");
+		if (status.compareTo("1") == 0) {
+			sendMessage("1");
 
-		String onlineUsers = in.readLine();
-		Log.i("AppInfo", onlineUsers);
+			String onlineUsers = in.readLine();
+			Log.i("AppInfo", onlineUsers);
 
-		MainActivity.populateOnlineUsers(onlineUsers);
+			MainActivity.populateOnlineUsers(onlineUsers);
 
-		String pendingMessages = in.readLine();
-		MainActivity.savePendingMessages(pendingMessages);
+			String pendingMessages = in.readLine();
+			MainActivity.savePendingMessages(pendingMessages);
 
-		return status.compareTo("1") == 0;
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	public void stopListening() {

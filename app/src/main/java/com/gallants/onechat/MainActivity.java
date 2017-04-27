@@ -73,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
 		});
 
 		onlineUsersList = new ArrayList<>();
-
-		new ConnectTask().execute("");
 	}
 
 	@Override
@@ -82,6 +80,8 @@ public class MainActivity extends AppCompatActivity {
 		super.onResume();
 		if (checkIfLoggedIn())
 			goToMessageActivity();
+		else
+			new ConnectTask().execute("");
 	}
 
 	public class ConnectTask extends AsyncTask<String, Void, Void> {

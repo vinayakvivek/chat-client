@@ -29,7 +29,7 @@ public class UsersListActivity extends AppCompatActivity {
 
 	ListView usersListView;
 
-	String currentUser;
+	String currentUser = "";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,15 @@ public class UsersListActivity extends AppCompatActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 		logout();
+	}
+
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Intent startMain = new Intent(Intent.ACTION_MAIN);
+		startMain.addCategory(Intent.CATEGORY_HOME);
+		startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(startMain);
 	}
 
 	@Override
