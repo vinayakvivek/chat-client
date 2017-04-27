@@ -46,8 +46,7 @@ public class Client {
 		}
 	}
 
-	public boolean login(String username, String password) throws IOException {
-		String cmd = "\\login";
+	public String command(String username, String password, String cmd) throws IOException {
 
 		sendMessage(cmd);
 		sendMessage(username + "," + password);
@@ -65,37 +64,9 @@ public class Client {
 
 			String pendingMessages = in.readLine();
 			MainActivity.savePendingMessages(pendingMessages);
-
-			return true;
-		} else {
-			return false;
 		}
-	}
 
-	public boolean register(String username, String password) throws IOException {
-		String cmd = "\\register";
-
-		sendMessage(cmd);
-		sendMessage(username + "," + password);
-
-		String status = in.readLine();
-		Log.i("AppInfo : status ", status);
-
-		if (status.compareTo("1") == 0) {
-			sendMessage("1");
-
-			String onlineUsers = in.readLine();
-			Log.i("AppInfo", onlineUsers);
-
-			MainActivity.populateOnlineUsers(onlineUsers);
-
-			String pendingMessages = in.readLine();
-			MainActivity.savePendingMessages(pendingMessages);
-
-			return true;
-		} else {
-			return false;
-		}
+		return status;
 	}
 
 	public void stopListening() {

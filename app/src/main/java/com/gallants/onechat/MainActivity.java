@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+	private static Context context;
+
 	public static final String PREF_NAME = "pref";
 	public static final String KEY_AUTH = "isAuthenticated";
 	public static final String KEY_NAME = "loggedInUser";
@@ -33,13 +35,17 @@ public class MainActivity extends AppCompatActivity {
 	EditText passwordText;
 	Button loginButton;
 	Button registerButton;
+	Button ldapLoginButton;
 
 	public static ArrayList<String> onlineUsersList;
+	public static ArrayList<String> usersWithNewMessage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		context = getApplicationContext();
 
 		usernameText = (EditText) findViewById(R.id.usernameText);
 		passwordText = (EditText) findViewById(R.id.passwordText);
@@ -48,13 +54,7 @@ public class MainActivity extends AppCompatActivity {
 		loginButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				String username = usernameText.getText().toString().trim();
-				String password = passwordText.getText().toString().trim();
-				try {
-					new LoginTask().execute(username, password);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				startTask("\\login");
 			}
 		});
 
@@ -62,17 +62,37 @@ public class MainActivity extends AppCompatActivity {
 		registerButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				String username = usernameText.getText().toString().trim();
-				String password = passwordText.getText().toString().trim();
-				try {
-					new RegisterTask().execute(username, password);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				startTask("\\register");
+			}
+		});
+
+		ldapLoginButton = (Button) findViewById(R.id.ldapLoginButton);
+		ldapLoginButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				startTask("\\ldaplogin");
 			}
 		});
 
 		onlineUsersList = new ArrayList<>();
+		usersWithNewMessage = new ArrayList<>();
+	}
+
+	public void startTask(String cmd) {
+		String username = usernameText.getText().toString().trim();
+		String password = passwordText.getText().toString().trim();
+
+		if (username.isEmpty()) {
+			Toast.makeText(getApplicationContext(), "Enter username", Toast.LENGTH_SHORT).show();
+		} else if (password.isEmpty()) {
+			Toast.makeText(getApplicationContext(), "Enter password", Toast.LENGTH_SHORT).show();
+		} else {
+			try {
+				new Task().execute(username, password, cmd);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -109,16 +129,16 @@ public class MainActivity extends AppCompatActivity {
 		}
 	}
 
-	public class LoginTask extends AsyncTask<String, Void, Boolean> {
+	public class Task extends AsyncTask<String, Void, String> {
 
 		@Override
-		protected Boolean doInBackground(String... params) {
+		protected String doInBackground(String... params) {
 			Log.i("AppInfo : ", params[0]);
 			Log.i("AppInfo : ", params[1]);
 			loggedInUser = params[0];
-			boolean status = false;
+			String status = "";
 			try {
-				status = mClient.login(params[0], params[1]);
+				status = mClient.command(params[0], params[1], params[2]);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -126,45 +146,17 @@ public class MainActivity extends AppCompatActivity {
 		}
 
 		@Override
-		protected void onPostExecute(Boolean status) {
+		protected void onPostExecute(String status) {
 			super.onPostExecute(status);
 
-			Log.i("AppInfo : ", status.toString());
-
-			if (status) {
+			if (status.compareTo("1") == 0) {
 				login();
 			} else {
-				Toast.makeText(getApplicationContext(), "Invalid loggedInUser/pass", Toast.LENGTH_SHORT).show();
-			}
-		}
-
-
-	}
-
-	public class RegisterTask extends AsyncTask<String, Void, Boolean> {
-
-		@Override
-		protected Boolean doInBackground(String... params) {
-			boolean status = false;
-			try {
-				status = mClient.register(params[0], params[1]);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return status;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean status) {
-			super.onPostExecute(status);
-
-			if (status) {
-				goToMessageActivity();
-			} else {
-				Toast.makeText(getApplicationContext(), "Username already taken! Try again", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), status, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
+
 
 	public void goToMessageActivity() {
 		Intent intent = new Intent(getApplicationContext(), UsersListActivity.class);
@@ -186,10 +178,11 @@ public class MainActivity extends AppCompatActivity {
 		try {
 			JSONObject messages = new JSONObject(pendingMessages);
 			JSONArray msgArray = messages.getJSONArray("messages");
+			Log.i("AppInfo", msgArray.toString());
 			for (int i = 0; i < msgArray.length(); ++i) {
 				JSONObject msg = msgArray.getJSONObject(i);
-				JSONArray msgAsArray = msg.getJSONArray("message");
-				Log.i("AppInfo", msgAsArray.toString());
+				usersWithNewMessage.add(msg.getString("source"));
+				Utility.saveMessage(msg.getString("source"), loggedInUser, msg.getString("message"), context);
 			}
 		} catch (JSONException e) {
 			e.printStackTrace();

@@ -69,6 +69,28 @@ public class UsersListActivity extends AppCompatActivity {
 		new ListenTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 	}
 
+	public void updateListWhenMessageComes() {
+		for (String user : MainActivity.usersWithNewMessage) {
+			if (usersList.contains(user)) {
+				int pos = usersList.indexOf(user);
+				Log.i("AppInfo", "uset at " + pos);
+
+				View v = usersListView.getAdapter().getView(pos, null, usersListView);
+				Log.i("AppInfo", v.toString());
+				v.animate().rotation(10).start();
+
+//				usersListView.getChildAt(usersList.indexOf(user)).setBackgroundColor(
+//						getResources().getColor(android.R.color.holo_orange_light));
+			}
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+//		updateListWhenMessageComes();
+	}
+
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

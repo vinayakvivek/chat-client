@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 public class OnlineListActivity extends AppCompatActivity {
 
@@ -31,12 +30,7 @@ public class OnlineListActivity extends AppCompatActivity {
 			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 				Log.i("AppInfo", "user no - " + i);
 				Intent intent = new Intent(getApplicationContext(), PeerMessageActivity.class);
-				Object ob = onlineUsersListView.getItemAtPosition(i);
-				String str = (String)ob ;
-				Toast.makeText(getApplicationContext(),str,Toast.LENGTH_SHORT).show();
-				Bundle bundle = new Bundle();
-				bundle.putString("name", str);
-				intent.putExtras(bundle);
+				intent.putExtra("name", MainActivity.onlineUsersList.get(i));
 				startActivity(intent);
 			}
 		});
