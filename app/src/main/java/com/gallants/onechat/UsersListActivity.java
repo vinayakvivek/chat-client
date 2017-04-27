@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -24,10 +25,11 @@ public class UsersListActivity extends AppCompatActivity {
 
 	private Client mClient;
 
-	ArrayList<String> usersList;
-	ArrayAdapter<String> usersListAdapter;
+	public static ArrayList<String> usersList;
+	public static ArrayAdapter<String> usersListAdapter;
 
 	ListView usersListView;
+	FloatingActionButton addNewUserFAB;
 
 	String currentUser = "";
 
@@ -35,6 +37,8 @@ public class UsersListActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_users_list);
+
+		setTitle("Contacts");
 
 		mClient = MainActivity.mClient;
 
@@ -51,6 +55,14 @@ public class UsersListActivity extends AppCompatActivity {
 				Intent intent = new Intent(getApplicationContext(), PeerMessageActivity.class);
 				intent.putExtra("name", currentUser);
 				startActivity(intent);
+			}
+		});
+
+		addNewUserFAB = (FloatingActionButton) findViewById(R.id.addNewUserFAB);
+		addNewUserFAB.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				startActivity(new Intent(getApplicationContext(), AddUserActivity.class));
 			}
 		});
 

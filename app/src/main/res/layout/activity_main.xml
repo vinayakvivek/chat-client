@@ -44,6 +44,7 @@
                 android:layout_gravity="start"
                 android:layout_weight="0.49"
                 android:layout_marginRight="20dp"
+                android:textColor="@android:color/white"
                 android:background="?attr/actionModeSplitBackground"
                 android:text="Log in" />
 
@@ -54,6 +55,7 @@
                 android:layout_gravity="end"
                 android:layout_weight="0.45"
                 android:background="?attr/actionModeSplitBackground"
+                android:textColor="@android:color/white"
                 android:text="Register" />
 
         </LinearLayout>

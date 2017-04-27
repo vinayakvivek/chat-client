@@ -51,7 +51,12 @@ public class PeerMessageActivity extends AppCompatActivity {
 		name = bundle.getString("name");
 		setTitle("Messages from " + name);
 
-		messageList = Utility.getMessages(name, MainActivity.loggedInUser, getApplicationContext());
+		if (UsersListActivity.usersList.contains(name)) {
+			messageList = Utility.getMessages(name, MainActivity.loggedInUser, getApplicationContext());
+		} else {
+			messageList = new ArrayList<>();
+			UsersListActivity.usersListAdapter.add(name);
+		}
 		messageAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, messageList);
 
 		messageListView = (ListView) findViewById(R.id.messageListView);

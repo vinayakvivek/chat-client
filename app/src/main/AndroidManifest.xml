@@ -33,6 +33,8 @@
 
         <activity android:name=".UsersListActivity">
         </activity>
+        <activity android:name=".AddUserActivity">
+        </activity>
     </application>
 
 </manifest>
